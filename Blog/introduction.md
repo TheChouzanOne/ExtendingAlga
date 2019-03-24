@@ -83,7 +83,7 @@ This is the part of the project I am more excited about. I've also seen that the
 
 ## What's next?
 
-Well, this is the end of my first post. It was basically a brainstorm of ideas. The next step is to actually get my hands dirty and start coding some graphs with the library. I've noticed that there's no `bfs` algorithm implemented, while `dfs` is, I don't know why. I will try to implement `bfs` on the next blog to get the hang of the library and haskell.
+Well, this is the end of my first post. It was basically a brainstorm of ideas. The next step is to actually get my hands dirty and start coding some graphs with the library. I've noticed that there's no `bfs` algorithm implemented, while `dfs` is, I don't know why. I will try to implement `bfs` on the next blog to get the hang of the library and haskell before diving into the labelled world.
 
 Any comments are welcome :)
 
