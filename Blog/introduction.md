@@ -59,7 +59,7 @@ Also, its own AdjacencyMap for working with labels is defined, thus, this will b
 There are a few other modules in the library, but I believe they are not as important as the ones mentioned above, and I think they will not be used.
 There are some things that I don't understand, such as the purpose of the Fold module. Every other graph type has its own definition of foldg and there is no reference to this module. This might mean that it is not such a useful module for the purpose of this blog.
 
-Nevertheless, I hope this brief descriptions are useful and I will be updating these as the library becomes clearer to me.
+Nevertheless, I hope these brief descriptions are useful and I will be updating them as the library becomes clearer to me.
 
 ## Acyclic graphs
 
