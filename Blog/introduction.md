@@ -1,4 +1,4 @@
-# Introduction
+# Introduction - First steps
 
 The objective of these posts are to share [alga](https://github.com/snowleopard/alga) and make it easier for newcomers to understand it. I'll do my best as I am a newcomer as well, not only on this library but haskell in general. I first heard about it on Seven Languages in Seven Weeks and has been in my interest languages list for a long time. Now was the proper time to take it out of there as one of the projects for [GSoC 2019](https://summerofcode.withgoogle.com/) consists of improving this library by adding some famous algorithms for weighted graphs and coming up with a typesafe representation for acyclic graphs. Thus, I will focus on the Labelled module of the library (and maybe come up with a new module called acyclic?).
 
@@ -59,7 +59,27 @@ Also, its own AdjacencyMap for working with labels is defined, thus, this will b
 There are a few other modules in the library, but I believe they are not as important as the ones mentioned above, and I think they will not be used.
 There are some things that I don't understand, such as the purpose of the Fold module. Every other graph type has its own definition of foldg and there is no reference to this module. This might mean that it is not such a useful module for the purpose of this blog.
 
-### Name this
+Nevertheless, I hope this brief descriptions are useful and I will be updating these as the library becomes clearer to me.
 
-Well, the first task is to come up with a typesafe representation for **acyclic graphs**, so it might be a good start to talk about my first thoughts on these. 
+## Acyclic graphs
+
+It might be a good idea to talk about my first thoughts on how to solve this problem. I repeat it, there are first thoughts and they might be wrong. Every DAG can be topologically sorted, so I believe that a typesafe representation should be closely related to the definition of a topological sort:
+
+> Given a graph G = (V,E), for every edge (u,v) ∈ E, u comes before v in the ordering.
+
+How could we use this definition to solve the problem? Well, I don't know anymore. Now that I write it down it doesn't seem practical to *build* a topological sort every time a new graph is created or a vertex is connected, as there are many orderings that satisfy this property, which was my first thought. Maybe, Just Maybe (see what I did there?), every time two graphs are combined, using the Maybe class an Acyclic Graph could be returned or Nothing if it is no longer cyclic. This sounds like a pretty bad idea performance-wise though. 
+
+This problem obviously needs more thought and research and I am sure actually good ideas will come to me in time. Also stated in the GSoC project idea, there's an [issue](https://github.com/snowleopard/alga/issues/152) regarding `scc` and `topSort`. My goal would be to create a type that solves this problem as well. It has been mentioned that phantom types might work, so I will need to check that out as well.
+
+## Implementing Kruskal, Dijkstra and Bellmand-Ford (optionally network flow algorithms)
+
+This sounds like a pretty fun project. I've participated in the ICPC Regional Finals at Mexico and I love implementing algorithms, although I've never done analysis on functional programs. I guess it's the same as recursive function calls in imperative languages.
+
+For Kruskal, I don't believe it should be a hard task to complete to be honest. I haven't had time to try the idea, but the algorithm should be pretty similar as the known one: sort edges by weight and take one by one using disjoint sets to know which vertices has been connected until there is only one set remaining and end up with a MSP. I might be thinking too lightly about it as I haven't seen how to implement disjoint sets on haskell (or if the Data.DSet is good enough), but I feel confident about this one.
+
+Regarding the other algorithms, they probably will be harder to implement, but no worries as *Introduction to Algorithms* by Thomas H. Cormen will be my inspiration to solve these problems. As AdjacencyMap being the main data type to use, it will be easier to implement these. 
+
+This is the part of the project I am more excited about.
+
+
 
