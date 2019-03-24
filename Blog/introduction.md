@@ -21,7 +21,7 @@ Here, the type class Graph is defined. There is a name collision between the dat
 
 #### Algebra.Graph.Fold
 
-Fold is a module that permits the user to transform the graph in many different ways. As the name sugests, it does a lot of folding with graphs. One of its main functions is foldg which allows us to manipulate graphs in very interesting ways. For example, its use is as follows:
+Fold is a module that permits the user to transform the graph in many different ways. As the name sugests, it does a lot of folding with graphs. Foldg is one of the main functions on graphs, which allows us to manipulate them in very interesting ways. For example, its use is as follows:
 
 ```haskell
 foldg e v o c g
@@ -35,11 +35,29 @@ This module defines behavior for graphs known to be non empty. There is another 
 
 #### Algebra.Graph.Relation
 
+This is one of the modules that I find easier to understand. It defines the Relation data type the same as the mathematical form discussed in the paper, which makes it more digestable in my opinion. This helps to define relations such as transitive, reflexive or symmetric in a much readable way.
 
+#### Algebra.Graph.AdjacencyMap and Algebra.Graph.AdjacencyIntMap
 
-#### Things I can't wrap my head around about the structure and definitions for every module
+These modules define the data type AdjacencyMap (**AM**) deriving from the Graph type class. This is the most common form of graphs representation found in any programming language. AdjacencyIntMap is a special module used for graphs whose vertex types are Ints.
 
-Por que hay tantas definiciones de un metodo en cada modulo? Que diferencia en realidad a Fold de cualquier otro modulo con método foldg?
+These modules are the only ones that support algorithms (**Algebra.Graph.AdjacencyMap.Algorithm**).
+
+From what I've seen, for every type of Graph, AMs are used as an intermediate type to work with algorithms, converting any other Graph type into an AM and applying a function such as ``scc`` or ``dfsForest``.
+
+#### Algebra.Graph.Label
+
+Pretty useful module as it defines different labels to use on labelled graphs. Perhaps the most important label is Distance.
+
+#### Algebra.Graph.Labelled
+
+This module removes the Overlay value from the Graph type, as it is now represented as Connect 0 graph1 graph2 for example. 
+Also, its own AdjacencyMap for working with labels is defined, thus, this will be the main module for working with weighted algorithms so I am sure there will be a special post for it in the future.
+
+#### Other modules and concerns
+
+There are a few other modules in the library, but I believe they are not as important as the ones mentioned above, and I think they will not be used.
+There are some things that I don't understand, such as the purpose of the Fold module. Every other graph type has its own definition of foldg and there is no reference to this module. This might mean that it is not such a useful module for the purpose of this blog.
 
 ### Name this
 
