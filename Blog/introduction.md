@@ -79,7 +79,13 @@ For Kruskal, I don't believe it should be a hard task to complete to be honest. 
 
 Regarding the other algorithms, they probably will be harder to implement, but no worries as *Introduction to Algorithms* by Thomas H. Cormen will be my inspiration to solve these problems. As AdjacencyMap being the main data type to use, it will be easier to implement these. 
 
-This is the part of the project I am more excited about.
+This is the part of the project I am more excited about. I've also seen that the work done in the previous year of GSoC is a [benchmark suite](https://github.com/haskell-perf/graphs) to compare algorithms from different libraries (fgl, containers, hash-graph and alga). It might be a good idea to see how to use this benchmark suite and compare my results to other libraries that have implemented these algorithms.
+
+## What's next?
+
+Well, this is the end of my first post. It was basically a brainstorm of ideas. The next step is to actually get my hands dirty and start coding some graphs with the library. I've noticed that there's no `bfs` algorithm implemented, while `dfs` is, I don't know why. I will try to implement `bfs` on the next blog to get the hang of the library and haskell.
+
+Any comments are welcome :)
 
 
 
