@@ -36,3 +36,33 @@ import Algebra.Graph.AdjacencyMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 ```
+There is no conflict between both AdjacencyMap modules. One thing to notice is that `.Internal` contains the type `AM`, which needs to be used to convert a `Map a (Set a)` back into an `AdjacencyMap a`. The other one exports useful functions that will be explained later.
+
+`Map` and `Set` are imported as qualified so that no conflict exists.
+
+## How should BFS function look like?
+
+Here starts the fun part. This algorithm should return an AM consisting of the BFS tree that results after choosing a root vertex. So the type should look like:
+
+```Haskell
+bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
+```
+First, `a` needs to be an instance of the `Ord` type class because many `Set` functions require its element to be like that (it is implemented using a balanced tree, so it makes sense). Then, the functions takes a vertex and a graph and returns a graph. Pretty straight forward. This is a friendly function for the user, but to use recursion and be able to share information from recursive call to recursive call, it needs to support a queue and a set of seen vertices, so a support function is defined as
+
+```Haskell
+bfsTreeUtil :: Ord a => [a] -> Set.Set a -> AdjacencyMap a -> AdjacencyMap a
+```
+Again, `a` needs to be an `Ord` instance. Now, this function takes a queue of vertices (`[a]`), a set of seen items `Set.Set a`, a graph and returns a graph. Here is where the fun part will happen. This means that `bfsTree` implementation should be easy:
+
+```Haskell
+bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
+bfsTree s g = bfsTreeUtil [s] (Set.singleton s) g
+```
+
+I call `bfsTreeUtil` and give it an initial queue with `s` as its initial vertex. Also, I've already seen the root vertex, so I pass it to the `seen` Set. `Set.singleton s` creates a set consisting of the element `s`. Finally, I pass the graph.
+
+
+
+
+
+There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT)
