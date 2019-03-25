@@ -65,6 +65,8 @@ I call `bfsTreeUtil` and give it an initial queue with `s` as its initial vertex
 
 Recursively, of course. My idea was to take the first element of the queue: the vertex, get all its neighbors that haven't been seen before, connect the vertex to these neighbors, create the new set of seen vertices, add new vertices to the queue and overlay the created graph to the result of recursively calling the function on the resulting elements and the tail of the queue. It will be much clearer once we see the code.
 
+### The pieces
+
 #### Neighbors
 
 So we one thing we need is to get the neighbors of a vertex. This can be done by using the function `postSet` from the `Algebra.Graph.AdjacencyMap` module. It basically returns the associated value from the given key, as `AdjacencyMap` is just a `Map`.
@@ -78,7 +80,24 @@ vSet neighbors seen = Set.difference neighbors seen
 ```
 The solution is simple. We assume we already have the neighbors of some vertex and some way to tell which vertices has been seen before. Both are `Set`s, so we just need to compute the difference of these. Note that neighbors should come first, as otherwise we would get only vertices that we have seen before.
 
-#### Adding vertices to the seen Set
+#### Adding vertices to the "seen" Set
+We need to know which vertices will be marked as seen after "iterating" on a node, so we need a `newSeen` function:
+
+```Haskell
+newSeen seen neighbors = Set.union seen neighbors
+```
+
+Again, we assume we know the neighbors of the current vertex and which vertices has been seen so far. We just need to compute the union of these two sets. Makes sense, right?
+
+#### And finally, enqueueing vertices
+As I promised, this will be done with lists. Assume we have a current queue and know which vertices need to be enqueued. Lets call them `qv` and `vSet` respectively. The q in `qv` stands for queue for readibility and `vSet` is basically the same as the `vSet` functions defined earlier. Its arguments are omitted. It's okay, I promise it will be clearer later.
+
+```Haskell
+newQueue qv vSet = qv ++ (Set.toAscList vSet)
+```
+
+We just take the current queue `qv` which is a list and concatenate to the list of `vSet`. As the name says, `vSet` is a `Set`, so we need to transform it to a `List`. This can be done using `Set.toAscList`, which takes a set and transform its elements into an ascending order `List`. This is done so "smaller" vertices are prioritized.
+
 
 
 ADD THIS NOTE: There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT) Should I return Nothing or empty? tough question to be honest. Looking at the implementation of postSet, it returns an empty set if you pass a vertex that does not exist, so I will keep it consistent.
