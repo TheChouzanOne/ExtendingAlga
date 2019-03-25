@@ -7,7 +7,7 @@ Also, this is the first time I write a blog so, bear with me. The quality of pos
 
 ## Where to start?
 
-Well, the main point of this blog is to share alga. There are some good introductions on the algebra behind alga, how to create graphs, why are they safe and so on. The main reference is [this paper](https://dl.acm.org/authorize.cfm?key=N46678) written by the author of alga, Andrey Mokhov, so I do recommend reading it first. Also, from previous years of GSoC a small [tutorial](https://nobrakal.github.io/alga-tutorial/index.html) has been written by Alexandre Moine.
+Well, the main point of this blog is to share alga. There are some good introductions on the algebra behind alga, how to create graphs, why are they safe and so on. The main reference is [this paper](https://github.com/snowleopard/alga-paper) written by the author of alga, Andrey Mokhov, so I do recommend reading it first. Also, from previous years of GSoC a small [tutorial](https://nobrakal.github.io/alga-tutorial/index.html) has been written by Alexandre Moine.
 
 I can first focus on the structure of the library. There is not much documentation on what each module contains (even though it can be derived from its name), so I will try to give a quick summary after skimming the code from every single one of them. If there are any mistakes, feel free to contact me and I will correct them asap. Also keep in mind that most of the text in every file are comments describing the behavior of the functions and the purpose of the module, which is pretty helpful.
 
