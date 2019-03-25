@@ -38,7 +38,7 @@ import qualified Data.Set as Set
 ```
 There is no conflict between both AdjacencyMap modules. One thing to notice is that `.Internal` contains the type `AM`, which needs to be used to convert a `Map a (Set a)` back into an `AdjacencyMap a`. The other one exports useful functions that will be explained later.
 
-`Map` and `Set` are imported as qualified so that no conflict exists.
+`Map` and `Set` are imported as qualified so that no conflict exists. I used `Strict` for `Map` as that's how its done in the library, but I really do not know why. After a quick search, it seems that `Strict` makes `Int` maps more efficient, so I guess that's good.
 
 ## How should BFS function look like?
 
@@ -98,6 +98,121 @@ newQueue qv vSet = qv ++ (Set.toAscList vSet)
 
 We just take the current queue `qv` which is a list and concatenate to the list of `vSet`. As the name says, `vSet` is a `Set`, so we need to transform it to a `List`. This can be done using `Set.toAscList`, which takes a set and transform its elements into an ascending order `List`. This is done so "smaller" vertices are prioritized.
 
+### Finally, it all comes together
+
+Now we can start implementing the logic behind the magical `bfsTreeUtil` function. It is recursive so we need a base case. According to the usual algorithm, it ends once the queue is empty, so the base case looks like
+
+```Haskell
+bfsTreeUtil :: Ord a => [a] -> Set.Set a -> AdjacencyMap a -> AdjacencyMap a
+bfsTreeUtil [] _ _ = empty
+```
+
+We use pattern matching, if the queue received is empty, we just return an empty graph. What if the queue is not empty? Well, we need to dequeue an element. This can be done with the `:` operator to take the head off the queue. So the queue argument will look like `(v:qv)` (You remember `qv`, right?). To make it more readable, we can add an *as-pattern*: `queue@(v:qv)`. We won't use it, and might make the algorithm a little slower, but makes it clear that this argument is acting as a queue.
+
+Now, the set of known vertices will just be called `seen` and the graph `g`. This means that the start of the function would look like this (I am keeping the base case as reference):
 
 
-ADD THIS NOTE: There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT) Should I return Nothing or empty? tough question to be honest. Looking at the implementation of postSet, it returns an empty set if you pass a vertex that does not exist, so I will keep it consistent.
+```Haskell
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = ...
+```
+
+What's next? Well, first, the current vertex is clearly `v`, as we are "dequeueing" it from the list. Now I said we were going to overlay the connection of this vertex to its unseen neighbors and the recursive call of the function. Which function helped us to get the unseen neighbors... hmm... Oh, that's it!`vSet`! Now, it might be a good idea to explain what does overlay do. It just takes two graphs as inputs and overlaps them. Read the paper for an in-depth explanation. The key part here is... "it takes two graphs as inputs" so we need to create an `AdjacencyMap` from what we have. Recall that the type derived from `adjacencyMap` is `Map a (Set a)`, so we need to build this structure from what we know. This can be done easily by `Map.singleton v vSet`. This graph contains only one element in its map, we we can use `singleton` for that. We associate the `vSet` as the value of key `v`. Now, we convert it to an `AdjacencyMap` by calling the type constructor `AM` like so: `AM $ Map.singleton v vSet`. Now we can easily derive the next part of `bfsTreeUtil`:
+
+```Haskell
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) ...
+```
+
+but how does it know what arguments do vSet have? This is where `where` comes in! We can declare the function as follows:
+
+```Haskell
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) ...
+    where
+        neighbors = postSet v g
+        vSet = Set.difference neighbors seen
+```
+Now we are starting to use the pieces we built earlier. These functions do not need arguments as they are already found at the start of `bfsTreeUtil`.
+
+`overlay` still needs its second argument, which should be a graph. We will pass it recursively, as the result of calling `bfsTreeUtil` on the resulting `queue` and set of `seen` vertices. So it looks like:
+
+```Haskell
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) (bfsTreeUtil newQueue newSeen g)
+    where
+        neighbors = postSet v g
+        vSet = Set.difference neighbors seen
+```
+
+But what does `newQueue` and `newSeen` mean? Well, we need more `where` clauses:
+ 
+```Haskell
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) (bfsTreeUtil newQueue newSeen g)
+    where
+        neighbors = postSet v g
+        vSet = Set.difference neighbors seen
+        newSeen = Set.union seen neighbors
+        newQueue = qv ++ (Set.toAscList vSet)  
+```
+
+We just add the final pieces that we built before. That's it! We have finished implementing `bfsTreeUtil`. Try it for yourself! If you have the graph `g = 1*2 + 1*3 + 1*4 + 2*4 + 3*5 + 4*6 + 5*6` (I'll let you figure out how this one looks, remember to read the [paper](https://github.com/snowleopard/alga-paper)), then 
+
+`bfsTree 1 g = edges [(1,2),(1,3),(1,4),(3,5),(4,6)]`
+
+If you think about it, this is correct! I haven't tested it througly, but it has worked fine for all my tests. There is just one problem.
+
+## The problem
+
+What if the root node doesn't exist in the graph? By the definition of `bfsTree`, we always pass the initial vertex as the first element of the queue. But if it doesn't exist in the graph, we get a wrong answer. Remember `g` from last section? Well, if we call `bfsTree 7 g` we get `vertex 7`. But how can BFS return a vertex that doesn't exist in the original graph? This is not a typesafe definition and defeats the purpose of alga. 
+
+Hopefully, there is an easy fix and does not involve changing the algorithm, but the initial call at `bfsTree`. What if we first check if the vertex exists at `g` and then take a decision? We could return `Nothing` if it doesn't exist, or an `empty` graph as a result, but after checking the behaviour of `postSet`, it returns `Set.empty` if we call it on a node that doesn't exist, so lets keep it consistent and return `empty` as well.
+
+The fix is to just wrap the `bfsTree` function defition as follows.
+
+```Haskell
+bfsTree s g = if (hasVertex s g) then bfsTreeUtil [s] (Set.singleton s) g else empty
+```
+
+`hasVertex` is a built-in function from `Algebra.Graph.AdjacencyMap` so we just use it and if its true, we proceed as normal, otherwise we just return an `empty` graph. Easy!
+
+So, the final code is as follows:
+
+```Haskell
+module BFS (
+    --Algorithms
+    bfsTree
+) where
+
+import Algebra.Graph.AdjacencyMap.Internal
+import Algebra.Graph.AdjacencyMap
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
+
+bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
+bfsTree s g = if (hasVertex s g) then bfsTreeUtil [s] (Set.singleton s) g else empty
+
+bfsTreeUtil :: Ord a => [a] -> Set.Set a -> AdjacencyMap a -> AdjacencyMap a
+bfsTreeUtil [] _ _ = empty
+bfsTreeUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) (bfsTreeUtil newQueue newSeen g)
+    where
+        neighbors = postSet v g
+        vSet = Set.difference neighbors seen
+        newSeen = Set.union seen neighbors
+        newQueue = qv ++ (Set.toAscList vSet)
+```
+
+We added a module declaration so this function can be exported easily and hide `bfsTreeUtil` from the API.
+
+## Final comments
+
+I really enjoyed writing this function. I do believe it is elegant and pretty short compared to imperative languages. It might not be the most efficient or most elegant way to write it, and might not be right to compare it to imperative programming, but I think it's hard to refute its shortness.
+
+I am unsure if this post is unnecesarily large, but I wanted to explain everything to detail. Again, I want to try to make it as friendly as possible to newcomers like me. Remember that any comments are welcome.
+
+Also, I am not sure what will come after this post, but if this implementation is good enough, I believe it would be a good idea to benchmark it, or improve it if necessary.
+
+That's it for me, have a great day and thank you for taking the time to read this!
+
+
