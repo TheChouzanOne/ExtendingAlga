@@ -6,3 +6,4 @@ main = do
     putStrLn $ show g
     putStrLn $ show $ bfsTree 1 g
     putStrLn $ show $ bfsTree 2 (1*(2+3) + 3*(6+7)+ 2*(4+5)+6*2+2*1+(4+2)*7 :: AdjacencyMap Int)
+    putStrLn $ show $ bfsTree 8 (1*(2+3) + 3*(6+7)+ 2*(4+5)+6*2+2*1+(4+2)*7 :: AdjacencyMap Int)
