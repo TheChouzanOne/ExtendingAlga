@@ -65,4 +65,4 @@ I call `bfsTreeUtil` and give it an initial queue with `s` as its initial vertex
 
 
 
-There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT)
+ADD THIS NOTE: There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT)
