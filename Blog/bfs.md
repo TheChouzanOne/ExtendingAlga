@@ -59,10 +59,26 @@ bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
 bfsTree s g = bfsTreeUtil [s] (Set.singleton s) g
 ```
 
-I call `bfsTreeUtil` and give it an initial queue with `s` as its initial vertex. Also, I've already seen the root vertex, so I pass it to the `seen` Set. `Set.singleton s` creates a set consisting of the element `s`. Finally, I pass the graph.
+I call `bfsTreeUtil` and give it an initial queue with `s` as its initial vertex. Also, I've already seen the root vertex, so I pass it to the `seen` Set. `Set.singleton s` creates a set consisting of the element `s`. Finally, I pass the graph to the function.
+
+## But how will bfsTreeUtil work exactly?
+
+Recursively, of course. My idea was to take the first element of the queue: the vertex, get all its neighbors that haven't been seen before, connect the vertex to these neighbors, create the new set of seen vertices, add new vertices to the queue and overlay the created graph to the result of recursively calling the function on the resulting elements and the tail of the queue. It will be much clearer once we see the code.
+
+#### Neighbors
+
+So we one thing we need is to get the neighbors of a vertex. This can be done by using the function `postSet` from the `Algebra.Graph.AdjacencyMap` module. It basically returns the associated value from the given key, as `AdjacencyMap` is just a `Map`.
+
+#### Vertices to connect the "root" vertex to.
+
+This is core to BFS, so we'll need to implement this one. There is one key point: if we have seen a vertex before and it is connected to the current one, we need to ignore it. As `AdjacencyMap`s use `Set`s, we will return a `Set`. We'll call it `vSet`. I will ignore the type signature as we will see later:
+
+```Haskell
+vSet neighbors seen = Set.difference neighbors seen
+```
+The solution is simple. We assume we already have the neighbors of some vertex and some way to tell which vertices has been seen before. Both are `Set`s, so we just need to compute the difference of these. Note that neighbors should come first, as otherwise we would get only vertices that we have seen before.
+
+#### Adding vertices to the seen Set
 
 
-
-
-
-ADD THIS NOTE: There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT)
+ADD THIS NOTE: There is one problem. What if the root node doesn't exist? The function will return `vertex 4` for example, even if `4` is not a node in the graph, which defeats the purpose of typesafe implementations. (MIGHT FIX IT JUST IN THE INITIAL FUNCTION BY GUARDING OR MONADING IT) Should I return Nothing or empty? tough question to be honest. Looking at the implementation of postSet, it returns an empty set if you pass a vertex that does not exist, so I will keep it consistent.
