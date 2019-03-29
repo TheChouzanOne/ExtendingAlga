@@ -47,7 +47,7 @@ Here starts the fun part. This algorithm should return an AM consisting of the B
 ```Haskell
 bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
 ```
-First, `a` needs to be an instance of the `Ord` type class because many `Set` functions require its element to be like that (it is implemented using a balanced tree, so it makes sense). Then, the functions takes a vertex and a graph and returns a graph. Pretty straight forward. This is a friendly function for the user, but to use recursion and be able to share information from recursive call to recursive call, it needs to support a queue and a set of seen vertices, so a support function is defined as
+First, `a` needs to be an instance of the `Ord` type class because many `Set` functions require its elements to be like that (it is implemented using a balanced tree, so it makes sense). Then, the function takes a vertex and a graph and returns a graph. Pretty straight forward. This is a friendly function for the user, but to use recursion and be able to share information from recursive call to recursive call, it needs to support a queue and a set of seen vertices, so a support function is defined as
 
 ```Haskell
 bfsTreeUtil :: Ord a => [a] -> Set.Set a -> AdjacencyMap a -> AdjacencyMap a
