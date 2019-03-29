@@ -16,7 +16,7 @@ The link shows an imperative algorithm, but we are working in a purely functiona
 ### How will I represent these elements?
 
 #### The graph
-This is just an adjacency map passed into the function. There is not much science here?
+This is just an adjacency map passed into the function. There is not much science here I believe.
 
 #### Queue
 I did not find an official queue for haskell (probably because of its mutable nature) so I decided to implement it just as a list, where dequeue will work as list deconstruction (`x:xs`) and enqueueing (?) elements to the list will work as a concatenation (`++`). I know this last part will be expensive, but I did not want to focus on efficiency yet.
