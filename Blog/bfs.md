@@ -6,7 +6,7 @@ Maybe I was too beaten yesterday to think properly, but I had a bad time trying 
 
 ## Algorithm idea
 
-So, it is a pretty known algorithm so I won't spend much time here. If you want to get a good idea you can check [this link](https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/). I won't compute the node distance from a  vertex to all the others, but instead, will focus on computing the BFS tree generated form a source node.
+It is a pretty well known algorithm so I won't spend much time here. If you want to get a good idea you can check out [this link](https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/). I won't compute the node distance from one vertex to all the others, instead I will focus on computing the BFS tree generated form a source node.
 
 The link shows an imperative algorithm, but we are working in a purely functional language, so we need to think recursively. What do we need?
   * A graph.
@@ -16,16 +16,16 @@ The link shows an imperative algorithm, but we are working in a purely functiona
 ### How will I represent these elements?
 
 #### The graph
-This is just an adjacency map passed into the function. There is not much science here I believe.
+This is just an adjacency map passed into the function, there is not much science here I believe.
 
 #### Queue
-I did not find an official queue for haskell (probably because of its mutable nature) so I decided to implement it just as a list, where dequeue will work as list deconstruction (`x:xs`) and enqueueing (?) elements to the list will work as a concatenation (`++`). I know this last part will be expensive, but I did not want to focus on efficiency yet.
+I did not find an official queue for Haskell (probably because of its mutable nature) so I decided to implement it just as a list, where dequeue will work as list deconstruction (`x:xs`) and enqueuing elements to the list will work as a concatenation (`++`). I know this last part will be computationally expensive, but I did not want to focus on efficiency yet.
 
 #### Seen vertices
 This will be implemented via the Data.Set data structure from Haskell, as it comes with pretty useful functions such as `union` and `difference`, and functions to convert Sets to Lists (`toList`,`toAscList`,`toDecList`).
 
 ## What's an AdjacencyMap (AM)?
-This data structure is defined in the `Algebra.Graph.AdjacencyMap.Internal` module, and is defined as a map of vertices as keys and sets of vertices as values. It is basically a hash table that maps a vertex to its neighbors (edges pointing outwards). The function `adjacencyMap` converts an `AdjacencyMap a` into a `Map a (Set a)` type, which helps to access its contents.
+This data structure is defined in the `Algebra.Graph.AdjacencyMap.Internal` module, and it's defined as a map of vertices as keys and sets of vertices as values. It is basically a hash table that maps a vertex to its neighbors (edges pointing outwards). The function `adjacencyMap` converts an `AdjacencyMap a` into a `Map a (Set a)` type, which helps to access its contents.
 
 ## Which modules should I import?
 Well, according to last sections, we need to import Sets, Maps and AdjacencyMaps. As there might be conflicts between modules (such as `map` functions defined at Sets or Maps), the import lines should look like this:
@@ -42,7 +42,7 @@ There is no conflict between both AdjacencyMap modules. One thing to notice is t
 
 ## How should BFS function look like?
 
-Here starts the fun part. This algorithm should return an AM consisting of the BFS tree that results after choosing a root vertex. So the type should look like:
+The fun part starts here, this algorithm should return an AM consisting of the BFS tree that results after choosing a root vertex. So the type should look like:
 
 ```Haskell
 bfsTree :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
@@ -69,7 +69,7 @@ Recursively, of course. My idea was to take the first element of the queue: the 
 
 #### Neighbors
 
-So we one thing we need is to get the neighbors of a vertex. This can be done by using the function `postSet` from the `Algebra.Graph.AdjacencyMap` module. It basically returns the associated value from the given key, as `AdjacencyMap` is just a `Map`.
+One thing we need to do is get the neighbors of a vertex. This can be done by using the function `postSet` from the `Algebra.Graph.AdjacencyMap` module. It basically returns the associated value from the given key, as `AdjacencyMap` is just a `Map`.
 
 #### Vertices to connect the "root" vertex to.
 
@@ -78,7 +78,7 @@ This is core to BFS, so we'll need to implement this one. There is one key point
 ```Haskell
 vSet neighbors seen = Set.difference neighbors seen
 ```
-The solution is simple. We assume we already have the neighbors of some vertex and some way to tell which vertices has been seen before. Both are `Set`s, so we just need to compute the difference of these. Note that neighbors should come first, as otherwise we would get only vertices that we have seen before.
+The solution is simple. We assume we already have the neighbors of some vertex and some way to tell which vertices have been seen before. Both are `Set`s, so we just need to compute the difference of these. Note that neighbors should come first, otherwise we would only get vertices that we have seen before.
 
 #### Adding vertices to the "seen" Set
 We need to know which vertices will be marked as seen after "iterating" on a node, so we need a `newSeen` function:
@@ -87,10 +87,10 @@ We need to know which vertices will be marked as seen after "iterating" on a nod
 newSeen seen neighbors = Set.union seen neighbors
 ```
 
-Again, we assume we know the neighbors of the current vertex and which vertices has been seen so far. We just need to compute the union of these two sets. Makes sense, right?
+Again, we assume we know the neighbors of the current vertex and which vertices have been seen so far. We just need to compute the union of these two sets. Makes sense, right?
 
-#### And finally, enqueueing vertices
-As I promised, this will be done with lists. Assume we have a current queue and know which vertices need to be enqueued. Lets call them `qv` and `vSet` respectively. The q in `qv` stands for queue for readibility and `vSet` is basically the same as the `vSet` functions defined earlier. Its arguments are omitted. It's okay, I promise it will be clearer later.
+#### And finally, enqueuing vertices
+As I promised, this will be done with lists. Lets assume we have a current queue and know which vertices need to be enqueued. Lets call them `qv` and `vSet` respectively. The q in `qv` stands for queue for readability and `vSet` its basically the same as the `vSet` functions defined earlier. Its arguments are omitted. It's okay, I promise it will be clearer later.
 
 ```Haskell
 newQueue qv vSet = qv ++ (Set.toAscList vSet)
@@ -117,7 +117,7 @@ bfsTreeUtil [] _ _ = empty
 bfsTreeUtil queue@(v:qv) seen g = ...
 ```
 
-What's next? Well, first, the current vertex is clearly `v`, as we are "dequeueing" it from the list. Now I said we were going to overlay the connection of this vertex to its unseen neighbors and the recursive call of the function. Which function helped us to get the unseen neighbors... hmm... Oh, that's it!`vSet`! Now, it might be a good idea to explain what does overlay do. It just takes two graphs as inputs and overlaps them. Read the paper for an in-depth explanation. The key part here is... "it takes two graphs as inputs" so we need to create an `AdjacencyMap` from what we have. Recall that the type derived from `adjacencyMap` is `Map a (Set a)`, so we need to build this structure from what we know. This can be done easily by `Map.singleton v vSet`. This graph contains only one element in its map, we we can use `singleton` for that. We associate the `vSet` as the value of key `v`. Now, we convert it to an `AdjacencyMap` by calling the type constructor `AM` like so: `AM $ Map.singleton v vSet`. Now we can easily derive the next part of `bfsTreeUtil`:
+What's next? Well, first, the current vertex is clearly `v`, as we are "dequeuing" it from the list. Now I said we were going to overlay the connection of this vertex to its unseen neighbors and the recursive call of the function. Which function helped us to get the unseen neighbors... hmm... Oh, that's it!`vSet`! Now, it might be a good idea to explain what does overlay do. It just takes two graphs as inputs and overlaps them. Read the paper for an in-depth explanation. The key part here is: "it takes two graphs as inputs" so we need to create an `AdjacencyMap` from what we have. Recall that the type derived from `adjacencyMap` is `Map a (Set a)`, so we need to build this structure from what we know. This can be done easily by `Map.singleton v vSet`. This graph contains only one element in its map, we we can use `singleton` for that. We associate the `vSet` as the value of key `v`. Now, we convert it to an `AdjacencyMap` by calling the type constructor `AM` like so: `AM $ Map.singleton v vSet`. Now we can easily derive the next part of `bfsTreeUtil`:
 
 ```Haskell
 bfsTreeUtil [] _ _ = empty
@@ -161,13 +161,13 @@ We just add the final pieces that we built before. That's it! We have finished i
 
 `bfsTree 1 g = edges [(1,2),(1,3),(1,4),(3,5),(4,6)]`
 
-If you think about it, this is correct! I haven't tested it througly, but it has worked fine for all my tests. There is just one problem.
+If you think about it, this is correct! I haven't tested it througly, nevertheless it has worked fine for all my tests. There is just one problem.
 
 ## The problem
 
 What if the root node doesn't exist in the graph? By the definition of `bfsTree`, we always pass the initial vertex as the first element of the queue. But if it doesn't exist in the graph, we get a wrong answer. Remember `g` from last section? Well, if we call `bfsTree 7 g` we get `vertex 7`. But how can BFS return a vertex that doesn't exist in the original graph? This is not a typesafe definition and defeats the purpose of alga. 
 
-Hopefully, there is an easy fix and does not involve changing the algorithm, but the initial call at `bfsTree`. What if we first check if the vertex exists at `g` and then take a decision? We could return `Nothing` if it doesn't exist, or an `empty` graph as a result, but after checking the behaviour of `postSet`, it returns `Set.empty` if we call it on a node that doesn't exist, so lets keep it consistent and return `empty` as well.
+Hopefully, there is an easy fix and does not involve changing the algorithm, only the initial call at `bfsTree`. What if we first check if the vertex exists at `g` and then take a decision? We could return `Nothing` if it doesn't exist, or an `empty` graph as a result, but after checking the behavior of `postSet`, it returns `Set.empty` if we call it on a node that doesn't exist, so lets keep it consistent and return `empty` as well.
 
 The fix is to just wrap the `bfsTree` function defition as follows.
 
@@ -209,10 +209,8 @@ We added a module declaration so this function can be exported easily and hide `
 
 I really enjoyed writing this function. I do believe it is elegant and pretty short compared to imperative languages. It might not be the most efficient or most elegant way to write it, and might not be right to compare it to imperative programming, but I think it's hard to refute its shortness.
 
-I am unsure if this post is unnecesarily large, but I wanted to explain everything to detail. Again, I want to try to make it as friendly as possible to newcomers like me. Remember that any comments are welcome.
+I am unsure if this post is unnecessarily large, but I wanted to explain everything in detail. Again, I want to try to make it as friendly as possible to newcomers like me. Remember that any comments are welcome.
 
 Also, I am not sure what will come after this post, but if this implementation is good enough, I believe it would be a good idea to benchmark it, or improve it if necessary.
 
 That's it for me, have a great day and thank you for taking the time to read this!
-
-
