@@ -8,7 +8,7 @@ Maybe I was too beaten yesterday to think properly, but I had a bad time trying 
 
 It is a pretty well known algorithm so I won't spend much time here. If you want to get a good idea you can check out [this link](https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/). I won't compute the node distance from one vertex to all the others, instead I will focus on computing the BFS tree generated form a source node.
 
-The link shows an imperative algorithm, but we are working in a purely functional language, so we need to think recursively. Here's what we need:
+The link shows an imperative algorithm, but we are working in a purely functional language, so we need to think recursively. What do we need?
   * A graph.
   * A queue to add vertices.
   * Some way to know which vertices has been visited/seen.
@@ -211,6 +211,6 @@ I really enjoyed writing this function. I do believe it is elegant and pretty sh
 
 I am unsure if this post is unnecessarily large, but I wanted to explain everything in detail. Again, I want to try to make it as friendly as possible to newcomers like me. Remember that any comments are welcome.
 
-Also, I am not sure what will come after this post, but if this implementation is good enough, I believe it would be a good idea to benchmark it, or improve it if it's necessary.
+Also, I am not sure what will come after this post, but if this implementation is good enough, I believe it would be a good idea to benchmark it, or improve it if necessary.
 
 That's it for me, have a great day and thank you for taking the time to read this!
