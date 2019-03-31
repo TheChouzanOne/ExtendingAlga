@@ -13,7 +13,7 @@ I can first focus on the structure of the library. There is not much documentati
 
 #### Algebra.Graph
 
-This is where the definition for the Graph data type is defined and its instance declarations can be found. A lot of the stuff talked about in the paper can be found here, such as the principal graph constructors (`empty`, `vertex`, `overlay`, `connect`) or common graph constructors like `mesh`, `star`, `clique`, `path`, etc. Also, some rules for the compiler are defined here, rules that I haven't done any research on yet.
+This is where the definition for the Graph data type is defined and its instance declarations can be found. A lot of the stuff from the paper can be found here, such as the principal graph constructors (`empty`, `vertex`, `overlay`, `connect`) or common graph constructors like `mesh`, `star`, `clique`, `path`, etc. Also, some rules for the compiler are defined here, rules that I haven't done any research on yet.
 
 #### Algebra.Graph.Class
 
@@ -56,7 +56,7 @@ Also, its own AdjacencyMap for working with labels is defined, thus, this will b
 
 #### Other modules and concerns
 
-There are a few other modules in the library, but I believe they are not as important as the ones mentioned above, and I doubt they will be used.
+There are a few other modules in the library, but I believe they are not as important as the ones mentioned above, and I think they will not be used.
 There are some things that I don't understand, such as the purpose of the Fold module. Every other graph type has its own definition of foldg and there is no reference to this module. This might mean that it is not such a useful module for the purpose of this blog.
 
 Nevertheless, I hope these brief descriptions are useful and I will be updating them as the library becomes clearer to me.
@@ -75,7 +75,7 @@ This problem obviously needs more thought and research and I am sure some actual
 
 This sounds like a pretty fun project. I've participated in the ICPC Regional Finals at Mexico and I love implementing algorithms, although I've never done analysis on functional programs. I guess it's the same as recursive function calls in imperative languages.
 
-For Kruskal, I don't believe it should be a hard task to complete if I'm being honest. I haven't had time to try some ideas, but the algorithm should be pretty similar as the most known one: sort edges by weight and take one by one using disjoint sets to know which vertices has been connected until there is only one set remaining and end up with a MSP. I might be thinking too lightly about it as I haven't seen how to implement disjoint sets on haskell (or if the Data.DSet is good enough), but I feel confident about this one.
+For Kruskal, I don't believe it should be a hard task to complete to be honest. I haven't had time to try some ideas, but the algorithm should be pretty similar as the most known one: sort edges by weight and take one by one using disjoint sets to know which vertices has been connected until there is only one set remaining and end up with a MSP. I might be thinking too lightly about it as I haven't seen how to implement disjoint sets on haskell (or if the Data.DSet is good enough), but I feel confident about this one.
 
 Regarding the other algorithms, they probably will be harder to implement, but no worries there as *Introduction to Algorithms* by Thomas H. Cormen will be my inspiration to solve these problems. As AdjacencyMap being the main data type to use, it will be easier to implement these. 
 
@@ -85,7 +85,7 @@ This is the part of the project I am more excited about. I've also seen that the
 
 Well, this is the end of my first post. It was basically a brainstorm of ideas. The next step is to actually get my hands dirty and start coding some graphs with the library. I've noticed that there's no `bfs` algorithm implemented, while `dfs` is and I don't know why. I will try to implement `bfs` on the next blog to get the hang of the library and haskell before diving into the labelled world.
 
-Any comments are welcome and much appriciated :)
+Any comments are welcome and much appreciated :)
 
 
 
