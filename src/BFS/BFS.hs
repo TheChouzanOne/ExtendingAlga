@@ -1,8 +1,8 @@
 module BFS (
     --Algorithms
     bfsTreeAdjacencyMap,
-    bfsForestAdjacencyMap,
-    bfsTree
+    -- bfsForestAdjacencyMap,
+    bfsForest
 ) where
 
 import Algebra.Graph.AdjacencyMap.Internal
@@ -12,8 +12,9 @@ import qualified Data.Set as Set
 import Data.Tree
 import Data.Maybe
 
--- bfsForest :: Ord a => AdjacencyMap a -> Forest a
--- Might implement this one by mapping bfsForestAdjacencyMap with the bfsTree function.
+bfsForest :: Ord a => AdjacencyMap a -> Forest a
+bfsForest g= map (\x -> bfsTree (firstV x) x) (bfsForestAdjacencyMap g)
+    where firstV = head . vertexList
 
 
 bfsTree :: Ord a => a -> AdjacencyMap a -> Tree a
