@@ -1,9 +1,8 @@
 module BFS (
     --Algorithms
-    bfsAdjacencyTreeMap,
+    bfsTreeAdjacencyMap,
     bfsForestAdjacencyMap,
-    bfsTree,
-    bfsForest
+    bfsTree
 ) where
 
 import Algebra.Graph.AdjacencyMap.Internal
@@ -14,22 +13,22 @@ import Data.Tree
 import Data.Maybe
 
 -- bfsForest :: Ord a => AdjacencyMap a -> Forest a
--- Might implement this one by mapping bfsForestAdjacencyMap
+-- Might implement this one by mapping bfsForestAdjacencyMap with the bfsTree function.
 
 
 bfsTree :: Ord a => a -> AdjacencyMap a -> Tree a
 bfsTree s g = unfoldTree look s
     where look b = (b, (Set.toAscList . fromJust . Map.lookup b) bfs)
-          bfs = adjacencyMap (bfsAdjacencyTreeMap s g)
+          bfs = adjacencyMap (bfsTreeAdjacencyMap s g)
 
 bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
 bfsForestAdjacencyMap g
     | isEmpty g = []
     | otherwise = headTree : bfsForestAdjacencyMap (induce (\x -> not (hasVertex x headTree)) g)
-        where headTree = bfsAdjacencyTreeMap ((head . vertexList) g) g
+        where headTree = bfsTreeAdjacencyMap ((head . vertexList) g) g
 
-bfsAdjacencyTreeMap :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
-bfsAdjacencyTreeMap s g = if (hasVertex s g) 
+bfsTreeAdjacencyMap :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
+bfsTreeAdjacencyMap s g = if (hasVertex s g) 
                           then bfsTreeUtil [s] (Set.singleton s) g 
                           else empty
 
