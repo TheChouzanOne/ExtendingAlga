@@ -1,7 +1,6 @@
 module BFS (
     --Algorithms
     bfsTreeAdjacencyMap,
-    -- bfsForestAdjacencyMap,
     bfsForest
 ) where
 
