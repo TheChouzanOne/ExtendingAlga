@@ -12,4 +12,4 @@ main = do
     putStrLn $ show $ bfsTreeAdjacencyMap 2 g2
     putStrLn $ show $ bfsTreeAdjacencyMap 8 g2
     putStrLn $ drawForest $ map (fmap show) (bfsForest g4)
-    -- putStrLn $ drawForest $ map (fmap show) (bfsForest empty)
+    putStrLn $ drawForest $ map (fmap show) (bfsForest (empty::AdjacencyMap Int))
