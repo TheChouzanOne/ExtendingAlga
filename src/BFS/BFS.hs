@@ -12,21 +12,16 @@ import qualified Data.Set as Set
 import Data.Tree
 import Data.Maybe
 
-bfsForest :: Ord a => AdjacencyMap a -> Forest a
-bfsForest g= map (\x -> bfsTree (firstV x) x) (bfsForestAdjacencyMap g)
-    where firstV = head . vertexList
-
-
 bfsTree :: Ord a => a -> AdjacencyMap a -> Tree a
 bfsTree s g = unfoldTree look s
     where look b = (b, (Set.toAscList . fromJust . Map.lookup b) bfs)
           bfs = adjacencyMap (bfsTreeAdjacencyMap s g)
 
-bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
-bfsForestAdjacencyMap g
+bfsForest :: Ord a => AdjacencyMap a -> [Tree a]
+bfsForest g
     | isEmpty g = []
-    | otherwise = headTree : bfsForestAdjacencyMap (induce (\x -> not (hasVertex x headTree)) g)
-        where headTree = bfsTreeAdjacencyMap ((head . vertexList) g) g
+    | otherwise = headTree : bfsForest (induce (\x -> not (elem x (flatten headTree))) g)
+        where headTree = bfsTree ((head . vertexList) g) g
 
 bfsTreeAdjacencyMap :: Ord a => a -> AdjacencyMap a -> AdjacencyMap a
 bfsTreeAdjacencyMap s g = if (hasVertex s g) 
