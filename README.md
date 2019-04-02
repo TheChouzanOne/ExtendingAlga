@@ -5,4 +5,4 @@ I will try to post all my learning process, interesting stuff I find, problems t
 
 ## Blog Index
 * [Introduction](https://github.com/TheChouzanOne/ExtendingAlga/blob/master/Blog/introduction.md) (Last updated: 31/03/2019)
-* [Breadth First Search](https://github.com/TheChouzanOne/ExtendingAlga/blob/master/Blog/bfs.md) (Last updated: 02/04/2019)
+* [Breadth First Search](https://github.com/TheChouzanOne/ExtendingAlga/blob/master/Blog/bfs.md) (Last updated: 31/03/2019)
