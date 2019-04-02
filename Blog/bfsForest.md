@@ -16,39 +16,42 @@ It might sound confusing now, but it makes sense. I do have some concerns about 
 
 Lets start building the functions one by one.
 
-### bfsForestAdjacencyMap
+### bfsForest
 
-Given the background from last section, we can deduce its type signature as follows:
+Given the background from last sections, we can deduce its type signature as follows:
 
 ```Haskell
-bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
+bfsForest :: Ord a => AdjacencyMap a -> [Tree a]
 ```
 As it is a list, we could do list construction (`x:xs`) as the main building method. First thing to consider is that if the input graph is empty, then an empty list should be returned, which can be done via guard clauses:
 
 ```Haskell
-bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
-bfsForestAdjacencyMap g
+bfsForest :: Ord a => AdjacencyMap a -> [Tree a]
+bfsForest g
     | isEmpty g = []
     | otherwise = ... 
 ```
 
-So we want to iterate over `g`'s vertices and build a tree from every one of them, but if one was already included in another tree, ignore it. I believe it might be easier to assume that we already have the first tree, lets call it `headTree`. If `bfsForestAdjacencyMap` computes the forest of a given graph, and we already have a `headTree`, then we can just call this algorithm again with `headTree`'s vertices removed, and use list construction. This is what I mean:
+So we want to iterate over `g`'s vertices and build a tree from every one of them, but if one was already included in another tree, ignore it. I believe it might be easier to assume that we already have the first tree, lets call it `headTree`. If `bfsForest` computes the forest of a given graph, and we already have a `headTree`, then we can just call this algorithm again with `headTree`'s vertices removed, and use list construction. This is what I mean:
 
 ```Haskell
-bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
-bfsForestAdjacencyMap g
+bfsForest :: Ord a => AdjacencyMap a -> [Tree a]
+bfsForest g
     | isEmpty g = []
-    | otherwise = headTree : bfsForestAdjacencyMap (induce (\x -> not (hasVertex x headTree)) g)
+    | otherwise = headTree : bfsForest (induce (\x -> not (elem x (flatten headTree))) g)
 ```
 
-We recursively call `bfsForestAdjacencyMap` but on a different graph.  `induce :: (a -> Bool) -> Graph a -> Graph a` helps us generate a new graph given `g`, by just taking all the vertices that satisfy the function and it automatically removes every vertex that doesn't and its correspongind edges. Given this, we just pass the function `\x -> not (hasVertex x headTree)`. In a more natural language, this means that for every vertex `x` in graph `g`, if `headTree` has the vertex `x` in it, then the function returns `false` and the vertex is not included in the new graph.
+We recursively call `bfsForest` but on a different graph.  `induce :: (a -> Bool) -> Graph a -> Graph a` helps us generate a new graph given `g`, by just taking all the vertices that return a `true` value in the function, automatically removing every vertex that doesn't and its correspongind edges. Given this, we just pass the function `\x -> not (elem x (flatten headTree))`. `flatten` is a function from `Data.Tree` that takes all the vertices from a `Tree a` and return them as a list `[a]`. Therefore, in a more natural language this is read like: for every vertex `x`, if `x` is not a vertex of `headTree`, then return `true`.
 
-Eventually, by recursively inducing the graph this way, it will reduce into an empty graph, and `bfsForestAdjacencyMap` will return an empty list `[]`, finishing the algorithm. But how do we compute `headTree`? We can make use of our old friend `bfsTreeAdjacencyMap`. It requires a vertex to be called, so need to retrieve any vertex from `g` beforehand. This can be done with `(head . vertexList) g` easily. Therefore, the final function is as follows:
+Eventually, by recursively inducing the graph this way, it will reduce into an empty graph, and `bfsForest` will return an empty list `[]`, finishing the algorithm. But how do we compute `headTree`? We can make use of our old friend `bfsTree`. It requires a vertex to be called, so need to retrieve any vertex from `g` beforehand. This can be done with `(head . vertexList) g` easily. Therefore, the final function is as follows:
 
 ```Haskell
-bfsForestAdjacencyMap :: Ord a => AdjacencyMap a -> [AdjacencyMap a]
-bfsForestAdjacencyMap g
+bfsForest :: Ord a => AdjacencyMap a -> [Tree a]
+bfsForest g
     | isEmpty g = []
-    | otherwise = headTree : bfsForestAdjacencyMap (induce (\x -> not (hasVertex x headTree)) g)
-        where headTree = bfsTreeAdjacencyMap ((head . vertexList) g) g
+    | otherwise = headTree : bfsForest (induce (\x -> not (elem x (flatten headTree))) g)
+        where headTree = bfsTree ((head . vertexList) g) g
 ```
+
+MORE DETAIL HERE.
+
