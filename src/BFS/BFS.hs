@@ -3,7 +3,7 @@ module BFS (
     bfsForest
 ) where
 
-import Algebra.Graph.AdjacencyMap.Internal
+import Algebra.Graph.AdjacencyMap.Internal as AM
 import Algebra.Graph.AdjacencyMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
@@ -56,7 +56,7 @@ bfsTreeAdjacencyMap s g = if (hasVertex s g)
 --
 bfsTreeAdjacencyMapUtil :: Ord a => [a] -> Set.Set a -> AdjacencyMap a -> AdjacencyMap a
 bfsTreeAdjacencyMapUtil [] _ _ = empty
-bfsTreeAdjacencyMapUtil queue@(v:qv) seen g = overlay (AM $ Map.singleton v vSet) (bfsTreeAdjacencyMapUtil newQueue newSeen g)
+bfsTreeAdjacencyMapUtil queue@(v:qv) seen g = overlay (AM.AM $ Map.singleton v vSet) (bfsTreeAdjacencyMapUtil newQueue newSeen g)
     where
         neighbors = postSet v g
         vSet = Set.difference neighbors seen
