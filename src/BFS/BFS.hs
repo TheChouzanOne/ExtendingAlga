@@ -9,6 +9,38 @@ import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import Data.Tree
 
+bfs :: Ord a => [a] -> AdjacencyMap a -> [[[a]]]
+bfs vs = (map levels . bfsForestFrom vs)
+
+
+-- bfsForestFrom vs 'empty'                                      == []
+-- 'forest' (bfsForestFrom [1]   $ 'edge' 1 1)                   == 'vertex' 1
+-- 'forest' (bfsForestFrom [1]   $ 'edge' 1 2)                   == 'edge' 1 2
+-- 'forest' (bfsForestFrom [2]   $ 'edge' 1 2)                   == 'vertex' 2
+-- 'forest' (bfsForestFrom [3]   $ 'edge' 1 2)                   == 'empty'
+-- 'forest' (bfsForestFrom [2,1] $ 'edge' 1 2)                   == 'vertices' [1,2]
+-- 'isSubgraphOf' ('forest' $ bfsForestFrom vs x) x              == True
+-- bfsForestFrom ('vertexList' x) x                              == 'bfsForest' x
+-- bfsForestFrom vs             ('vertices' vs)                  == 'map' (\\v -> Node v []) ('Data.List.nub' vs)
+-- bfsForestFrom []             x                                == []
+-- bfsForestFrom [1,4] $ 1 * (3+5+7) + 3 * (5+4) + (4+3+5+7) * 6 ==  [ Node { rootLabel = 3
+--                                                                          , subForest = [ Node { rootLabel = 4
+--                                                                                                 , subForest = []}
+--                                                                                        , Node { rootLabel = 5
+--                                                                                               , subForest = []}
+--                                                                                        , Node { rootLabel = 6
+--                                                                                               , subForest = [] }]}
+--                                                                   , Node { rootLabel = 1
+--                                                                          , subForest = [ Node { rootLabel = 7
+--                                                                                               , subForest = [] }]}]
+-- @
+bfsForestFrom :: Ord a => [a] -> AdjacencyMap a -> Forest a
+bfsForestFrom [] _ = []
+bfsForestFrom (v:vs) g
+    | hasVertex v g = headTree:bfsForestFrom vs (induce (\x -> not $ elem x removedVertices) g)
+    | otherwise = bfsForestFrom vs g
+        where headTree = bfsTree v g
+              removedVertices = flatten headTree
 -- | Compute the /breadth-first search/ forest of a graph that corresponds to
 -- searching from each of the graph vertices in the 'Ord' @a@ order.
 --
