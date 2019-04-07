@@ -8,6 +8,16 @@ import Algebra.Graph.AdjacencyMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 import Data.Tree
+import Data.List
+
+bfs2 :: Ord a => [a] -> AdjacencyMap a -> [[a]]
+bfs2 vs g = foldr (zipWith (++)) acc (map (++ repeat []) l)
+    where l = bfs vs g 
+          maxLength = maximum (map length l)
+          acc = [ [] | _<-[1..maxLength]]
+
+
+
 
 bfs :: Ord a => [a] -> AdjacencyMap a -> [[[a]]]
 bfs vs = (map levels . bfsForestFrom vs)
