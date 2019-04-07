@@ -82,6 +82,32 @@ bfsForest g
 
 Finally, `bfsForest` is complete and works as intended! It does not look as clean as `bfsTree` sadly, but it works and that fills me with joy :) .
 
+#### Testing bfsForest
+
+To convince you that bfsForest works, here are some examples (taken/based from [alga](https://github.com/snowleopard/alga/blob/master/src/Algebra/Graph/AdjacencyMap/Algorithm.hs)'s DFS documentation).
+
+To show this easier, I will use an already defined function called `forest` which takes a `Forest a` type and converts it into an `AdjacencyMap a` type, as showing `Forest a` gets a little trickier.
+
+```Haskell
+bfsForest 'empty'                       == []
+forest (bfsForest $ 'edge' 1 1)         == vertex 1
+forest (bfsForest $ 'edge' 1 2)         == edge 1 2
+forest (bfsForest $ 'edge' 2 1)         == vertices [1,2]
+bfsForest $ 1 * (3+5+7) + 3 * (5+4) + (4+3+5+7) * 6 ==  [Node {rootLabel = 1
+                                                              , subForest = [Node {rootLabel = 3
+                                                                                  , subForest = [ Node {rootLabel = 4
+                                                                                                       , subForest = [] }
+                                                                                                , Node {rootLabel = 6
+                                                                                                       , subForest = [] }]}
+                                                                            , Node {rootLabel = 5
+                                                                                   , subForest = [] }
+                                                                            , Node {rootLabel = 7
+                                                                                   , subForest = [] }]}]
+```
+
+To make it easier to work around the last example, here is an image of the graph before applying `bfsForest`to it: ![idkWhatToPutHere](https://github.com/TheChouzanOne/ExtendingAlga/blob/master/Blog/img/bfsForest/test.PNG)
+
+
 ## What's next?
 
 I am starting to like iterating over my first BFS implementation, as before (and during) the writing of this post I modified the implementation significantly and even manage to remove a function. So I really want to meet the standards for this to be added to alga. Depending on feedback, I might create functions `bfs` and `bfsForestFrom`, focus on performance or start building weighted graph algorithms. Actually, the latest sounds like the most fun option, but I'll see and keep you updated.
