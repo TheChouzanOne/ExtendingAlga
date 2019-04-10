@@ -13,9 +13,9 @@ import Data.Maybe
 getSortedEdgesBy :: (Monoid e, Ord a, Ord e) => (e->e->Ordering) -> AdjacencyMap e a -> [(e,a,a)]
 getSortedEdgesBy f = (sortBy (\(w1,_,_) (w2,_,_) -> f w1 w2) . edgeList)
 
-kruskall :: (Monoid e, Ord e, Ord a, Eq a) => AdjacencyMap e a -> AdjacencyMap e a
-kruskall g =  kruskallUtil edges initialMap initialG
-    where edges = getSortedEdgesBy (\x y -> if x > y then GT else LT) g
+kruskall :: (Monoid e, Ord e, Ord a, Eq a) => (e -> e -> Ordering) -> AdjacencyMap e a -> AdjacencyMap e a
+kruskall f g =  kruskallUtil edges initialMap initialG
+    where edges = getSortedEdgesBy f g
           initialMap = foldr Map.union Map.empty (map (\x -> Map.singleton x x) (vertexList g))
           initialG = vertices $ vertexList g
 
