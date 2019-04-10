@@ -21,7 +21,7 @@ kruskall g =  kruskallUtil edges initialMap initialG
 
 kruskallUtil :: (Monoid e, Ord a, Eq a, Ord e) => [(e, a, a)] -> Map.Map a a -> AdjacencyMap e a -> AdjacencyMap e a
 kruskallUtil [] _ g = g
-kruskallUtil ((e,x,y):es) ds g = case valX == valY of -- I could also implement it using disjoint from Data.Sets
+kruskallUtil ((e,x,y):es) ds g = case valX == valY of -- I could also implement it using disjoint from Data.Sets, but I believe the cost would increase.
     True -> kruskallUtil es ds g
     False -> kruskallUtil es newDS newG
     where newDS = Map.map (\v -> if v == valY then valX else v) ds --Basically path compression
